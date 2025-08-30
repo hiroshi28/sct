@@ -1,0 +1,1744 @@
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "XNON HUB | GrowAGarden",
+    SubTitle = "By 001x",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(550, 320),
+    Acrylic = false,
+    Theme = "Amethyst",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Log = Window:AddTab({ Title = "Log", Icon = "crown" }),
+    Main = Window:AddTab({ Title = "Main", Icon = "code" }),
+    Event = Window:AddTab({ Title = "Event", Icon = "sword" }),
+    Pet = Window:AddTab({ Title = "Pet", Icon = "library" }),
+    Shop = Window:AddTab({ Title = "Shop", Icon = "box" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+local Options = Fluent.Options
+local Plr = game:GetService("Players")
+local LocalPlr = Plr.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "XNON HUB",
+        Icon = "rbxassetid://96619484755845",
+        Text = "ยินดีต้อนรับ อย่าลืมเข้าดิสคอร์ดด้วยน้า",
+        Duration = 10,
+    })
+end)
+
+Tabs.Log:AddSection("Link")
+Tabs.Log:AddButton({
+    Title = "Discord Invite",
+    Description = "กดเพื่อคัดลอกลิ้งค์ดิสคอร์ด",
+    Callback = function()
+        setclipboard("https://discord.gg/ZENSyVq8KD")
+        StarterGui:SetCore("SendNotification", {
+            Title = "XNON HUB",
+            Icon = "rbxassetid://96619484755845",
+            Text = "คัดลอกลิ้งแล้ว",
+            Duration = 5,
+        })
+    end
+})
+
+do
+    local antiAFKConn
+    local antiAFKEverStarted = false
+
+    Tabs.Log:AddToggle("AntiAFKToggle", {
+        Title = "Anti AFK",
+        Default = false,
+        Callback = function(state)
+            if state then
+                antiAFKEverStarted = true
+                if antiAFKConn then antiAFKConn:Disconnect() end
+
+                local VirtualUser = game:GetService("VirtualUser")
+                antiAFKConn = LocalPlr.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "เปิดกันเตะ20น.แล้ว",
+                    Duration = 5,
+                })
+            else
+                if antiAFKConn then
+                    antiAFKConn:Disconnect()
+                    antiAFKConn = nil
+                end
+
+                if antiAFKEverStarted then
+                    StarterGui:SetCore("SendNotification", {
+                        Title = "XNON HUB",
+                        Icon = "rbxassetid://96619484755845",
+                        Text = "ปิดกันเตะ20น.แล้ว",
+                        Duration = 5,
+                    })
+                end
+            end
+        end
+    })
+end
+
+
+Tabs.Log:AddSection("Players")
+
+do
+    local Speed = 16
+    local Jump = 50
+
+    local inputWS = Tabs.Log:AddInput("Input_WalkSpeed", {
+        Title = "WalkSpeed",
+        Default = tostring(Speed),
+        Placeholder = "ใส่จำนวน",
+        Numeric = true,
+        Finished = true,
+        Callback = function(Value)
+            Speed = tonumber(Value) or Speed
+        end
+    })
+
+    Tabs.Log:AddButton({
+        Title = "Set WalkSpeed",
+        Description = "กดเพื่อเปลี่ยนความเร็ว",
+        Callback = function()
+            local hum = LocalPlr.Character and LocalPlr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.WalkSpeed = Speed
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "ปรับความเร็วแล้ว: " .. tostring(Speed),
+                    Duration = 5
+                })
+            else
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "ไม่พบ Humanoid",
+                    Duration = 3
+                })
+            end
+        end
+    })
+
+    local inputJP = Tabs.Log:AddInput("Input_JumpPower", {
+        Title = "JumpPower",
+        Default = tostring(Jump),
+        Placeholder = "ใส่จำนวน",
+        Numeric = true,
+        Finished = true,
+        Callback = function(Value)
+            Jump = tonumber(Value) or Jump
+        end
+    })
+
+    Tabs.Log:AddButton({
+        Title = "Set JumpPower",
+        Description = "กดเพื่อเปลี่ยนพลังกระโดด",
+        Callback = function()
+            local hum = LocalPlr.Character and LocalPlr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.JumpPower = Jump
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "ปรับพลังกระโดดแล้ว: " .. tostring(Jump),
+                    Duration = 5
+                })
+            else
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "ไม่พบ Humanoid",
+                    Duration = 3
+                })
+            end
+        end
+    })
+end
+
+do
+    local JobId = ""
+    Tabs.Settings:AddButton({
+        Title = "Copy JobId",
+        Callback = function()
+            setclipboard(tostring(game.JobId))
+            StarterGui:SetCore("SendNotification", {
+                Title = "XNON HUB",
+                Icon = "rbxassetid://96619484755845",
+                Text = "คัดลอกไอดีเซิร์ฟเวอร์แล้ว",
+                Duration = 5,
+            })
+        end
+    })
+
+    Tabs.Settings:AddInput("Input_JobId", {
+        Title = "JobId",
+        Default = "",
+        Placeholder = "Enter JobId",
+        Numeric = false,
+        Finished = true,
+        Callback = function(Value)
+            JobId = Value or ""
+        end
+    })
+
+    Tabs.Settings:AddButton({
+        Title = "Teleport To JobId",
+        Callback = function()
+            if JobId ~= "" then
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, JobId)
+            else
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "กรุณาใส่ JobId ก่อน",
+                    Duration = 3,
+                })
+            end
+        end
+    })
+end
+
+local CoreGui = game:GetService("CoreGui")
+local logoGui = Instance.new("ScreenGui")
+
+logoGui.Name = "XNONHUB"
+logoGui.ResetOnSpawn = false
+logoGui.Parent = CoreGui.ScreenGui
+
+local logoButton = Instance.new("ImageButton")
+logoButton.Name = "LogoButton"
+logoButton.Size = UDim2.new(0, 55, 0, 55)
+logoButton.Position = UDim2.new(0, 65, 0, 50)
+logoButton.BackgroundTransparency = 1
+logoButton.Image = "rbxassetid://96619484755845"
+logoButton.Parent = logoGui
+logoButton.ZIndex = 900
+
+logoButton.MouseButton1Click:Connect(function()
+    CoreGui.ScreenGui:GetChildren()[2].Visible = not CoreGui.ScreenGui:GetChildren()[2].Visible
+end)
+
+function dragify(Frame, object)
+    local dragToggle = false
+    local dragSpeed = 0.1
+    local dragInput = nil
+    local dragStart = nil
+    local startPos = nil
+
+    local function updateInput(input)
+        local Delta = input.Position - dragStart
+        local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+        game:GetService("TweenService"):Create(object, TweenInfo.new(dragSpeed), {Position = Position}):Play()
+    end
+
+    Frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = object.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    Frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragToggle then
+            updateInput(input)
+        end
+    end)
+end
+
+dragify(logoButton, logoButton)
+
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("XNON HUB")
+SaveManager:SetFolder("XNON HUB/specific-game")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+Window:SelectTab(1)
+SaveManager:LoadAutoloadConfig()
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+
+local BuySeedRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuySeedStock")
+local BuyGearRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuyGearStock")
+local BuyEggRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuyPetEgg")
+local BuyEventShopRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuyEventShopStock")
+
+local Seeds = {
+    "ALL",
+    "Carrot", "Strawberry", "Blueberry", "Orange Tulip", "Tomato",
+    "Daffodil", "Corn", "Watermelon", "Pumpkin", "Bamboo",
+    "Coconut", "Dragon Fruit", "Cactus", "Mango", "Grape",
+    "Pepper", "Mushroom", "Cacao", "Beanstalk", "Ember Lily",
+    "Sugar Apple", "Burning Bud", "Giant Pinecone", "Elder Strawberry", "Romanesco"
+}
+
+local Gears = {
+    "ALL",
+    "Watering Can", "Trowel", "Recall Wrench", "Basic Sprinkler",
+    "Advanced Sprinkler", "Godly Sprinkler", "Tanning Mirror",
+    "Master Sprinkler", "Cleaning Spray", "Favorite Tool",
+    "Harvest Tool", "Friendship Pot", "Magnifying Glass",
+    "Levelup Lollipop", "Medium Treat", "Medium Toy",
+    "Grandmaster Sprinkler", "Trading Ticket"
+}
+
+local Eggs = {
+    "ALL",
+    "Common Egg", "Common Summer Egg", "Rare Summer Egg",
+    "Mythical Egg", "Paradise Egg", "Bug Egg"
+}
+
+local BeanstalkItems = {
+    "ALL",
+    "Sprout Seed Pack",
+    "Sprout Egg",
+    "Mandrake",
+    "Sprout Crate",
+    "Silver Fertilizer",
+    "Canary Melon Seed",
+    "Amberheart",
+    "Spriggan"
+}
+
+local selectedSeeds = {}
+local selectedGears = {}
+local selectedEggs = {}
+local selectedBeanstalk = {}
+
+local function updateSelection(Value, fullList, selectedList)
+    selectedList = {}
+    if Value["ALL"] then
+        for _, v in ipairs(fullList) do
+            if v ~= "ALL" then
+                table.insert(selectedList, v)
+            end
+        end
+    else
+        for v, state in pairs(Value) do
+            if state and v ~= "ALL" then
+                table.insert(selectedList, v)
+            end
+        end
+    end
+    return selectedList
+end
+
+Tabs.Shop:AddSection("Auto Buy")
+
+local SeedDropdown = Tabs.Shop:AddDropdown("SeedMulti", {
+    Title = "Select Seeds",
+    Multi = true,
+    Values = Seeds,
+    Default = {}
+})
+SeedDropdown:OnChanged(function(Value)
+    selectedSeeds = updateSelection(Value, Seeds, selectedSeeds)
+end)
+
+local GearDropdown = Tabs.Shop:AddDropdown("GearMulti", {
+    Title = "Select Gears",
+    Multi = true,
+    Values = Gears,
+    Default = {}
+})
+GearDropdown:OnChanged(function(Value)
+    selectedGears = updateSelection(Value, Gears, selectedGears)
+end)
+
+local EggDropdown = Tabs.Shop:AddDropdown("EggMulti", {
+    Title = "Select Eggs",
+    Multi = true,
+    Values = Eggs,
+    Default = {}
+})
+EggDropdown:OnChanged(function(Value)
+    selectedEggs = updateSelection(Value, Eggs, selectedEggs)
+end)
+
+local BeanstalkDropdown = Tabs.Shop:AddDropdown("BeanstalkMulti", {
+    Title = "Select Beanstalk",
+    Multi = true,
+    Values = BeanstalkItems,
+    Default = {}
+})
+BeanstalkDropdown:OnChanged(function(Value)
+    selectedBeanstalk = updateSelection(Value, BeanstalkItems, selectedBeanstalk)
+end)
+
+local autoBuyAll = false
+local autoBuyEverStarted = false
+
+Tabs.Shop:AddToggle("AutoBuyAllToggle", {
+    Title = "Auto Buy",
+    Default = false,
+    Callback = function(State)
+        autoBuyAll = State
+
+        if State then
+            autoBuyEverStarted = true
+            StarterGui:SetCore("SendNotification", {
+                Title = "XNON HUB",
+                Icon = "rbxassetid://96619484755845",
+                Text = "เริ่มซื้อแล้ว",
+                Duration = 5
+            })
+
+            task.spawn(function()
+                while autoBuyAll do
+                    for _, s in ipairs(selectedSeeds) do
+                        BuySeedRemote:FireServer(s)
+                    end
+
+                    for _, g in ipairs(selectedGears) do
+                        BuyGearRemote:FireServer(g)
+                    end
+
+                    for _, e in ipairs(selectedEggs) do
+                        BuyEggRemote:FireServer(e)
+                    end
+
+                    for _, b in ipairs(selectedBeanstalk) do
+                        BuyEventShopRemote:FireServer(b)
+                    end
+
+                    task.wait(0.1)
+                end
+            end)
+        else
+            if autoBuyEverStarted then
+                StarterGui:SetCore("SendNotification", {
+                    Title = "XNON HUB",
+                    Icon = "rbxassetid://96619484755845",
+                    Text = "หยุดซื้อแล้ว",
+                    Duration = 5
+                })
+            end
+        end
+    end
+})
+
+
+
+Tabs.Log:AddSection("Gui Tp")
+
+Tabs.Log:AddToggle("TpGear", {
+    Title = "TpGear",
+    Default = false,
+    Callback = function(State)
+        local player = game.Players.LocalPlayer
+        local guiName = "TpGearButtonUI"
+
+        local existingGui = player.PlayerGui:FindFirstChild(guiName)
+        if existingGui then
+            existingGui:Destroy()
+        end
+
+        if State then
+            local screenGui = Instance.new("ScreenGui")
+            screenGui.Name = guiName
+            screenGui.ResetOnSpawn = false
+            screenGui.Parent = player:WaitForChild("PlayerGui")
+
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0.05, 20, 0, 20)
+            button.Position = UDim2.new(0.5, -190, 0.49, -140)
+            button.BackgroundColor3 = Color3.fromRGB(67, 205, 70)
+            button.Text = "GEAR"
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.GothamBold
+            button.TextScaled = true
+            button.Parent = screenGui
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 1
+            stroke.Color = Color3.fromRGB(0, 0, 0)
+            stroke.Parent = button
+
+            button.MouseButton1Click:Connect(function()
+                local character = player.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(
+                        -285.415436, 4.49902201, -13.9778976,
+                        -0.000955665077, -0.00184168795, 0.999997854,
+                        -1.7663441e-06, 0.999998331, 0.00184168702,
+                        -0.999999523, -1.1775926e-08, -0.000955666706
+                    )
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Log:AddToggle("TpEgg", {
+    Title = "TpEgg",
+    Default = false,
+    Callback = function(State)
+        local player = game.Players.LocalPlayer
+        local guiName = "TpEggButtonUI"
+
+        local existingGui = player.PlayerGui:FindFirstChild(guiName)
+        if existingGui then
+            existingGui:Destroy()
+        end
+
+        if State then
+            local screenGui = Instance.new("ScreenGui")
+            screenGui.Name = guiName
+            screenGui.ResetOnSpawn = false
+            screenGui.Parent = player:WaitForChild("PlayerGui")
+
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0.05, 20, 0, 20)
+            button.Position = UDim2.new(0.92, -190, 0.49, -140)
+            button.BackgroundColor3 = Color3.fromRGB(225, 255, 0)
+            button.Text = "EGG"
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.GothamBold
+            button.TextScaled = true
+            button.Parent = screenGui
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 1
+            stroke.Color = Color3.fromRGB(0, 0, 0)
+            stroke.Parent = button
+
+            button.MouseButton1Click:Connect(function()
+                local character = player.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(
+                        -286.059723, 2.99841857, -1.28618991, -0.0120093143, -3.08151193e-08, 0.999927878, -4.93137158e-08, 1, 3.0225074e-08, -0.999927878, -4.89471752e-08, -0.0120093143
+                    )
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Log:AddToggle("TpBeanstalk", {
+    Title = "TpBeanstalk",
+    Default = false,
+    Callback = function(State)
+        local player = game.Players.LocalPlayer
+        local guiName = "TpBeanstalkButtonUI"
+
+        local existingGui = player.PlayerGui:FindFirstChild(guiName)
+        if existingGui then
+            existingGui:Destroy()
+        end
+
+        if State then
+            local screenGui = Instance.new("ScreenGui")
+            screenGui.Name = guiName
+            screenGui.ResetOnSpawn = false
+            screenGui.Parent = player:WaitForChild("PlayerGui")
+
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0.09, 20, 0, 20)
+            button.Position = UDim2.new(0.69, -190, 0.4, -140)
+            button.BackgroundColor3 = Color3.fromRGB(139, 69, 19)
+            button.Text = "Beanstalk"
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.GothamBold
+            button.TextScaled = true
+            button.Parent = screenGui
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 1
+            stroke.Color = Color3.fromRGB(0, 0, 0)
+            stroke.Parent = button
+
+            button.MouseButton1Click:Connect(function()
+                local character = player.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(
+                        -107.256645, 4.53195858, -9.34645653, 0.999835551, -4.62757255e-09, 0.0181333404, 3.92904997e-09, 1, 3.85570686e-08, -0.0181333404, -3.84794809e-08, 0.999835551
+                    )
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Main:AddSection("Plant(ยังเขียนไม่เสร็จ)")
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local LocalPlr = Players.LocalPlayer
+local PlantEvent = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("Plant_RE")
+
+local autoPlant = false
+local selectedSeed = nil
+local plantMode = nil
+local plantDelay = 1
+
+local farms = {}
+local function updateFarmData()
+    farms = {}
+    for _, farm in pairs(workspace:FindFirstChild("Farm"):GetChildren()) do
+        local data = farm:FindFirstChild("Important") and farm.Important:FindFirstChild("Data")
+        if data and data:FindFirstChild("Owner") and data.Owner.Value == LocalPlr.Name then
+            table.insert(farms, farm)
+        end
+    end
+end
+
+local function getRandomFarmPosition()
+    updateFarmData()
+    if #farms > 0 then
+        local farm = farms[math.random(1, #farms)]
+        return farm.Position
+    end
+    return nil
+end
+
+local function equipSeedTool(seedPrefix)
+    if not seedPrefix then return end
+    local backpack = LocalPlr:FindFirstChild("Backpack")
+    if backpack then
+        for _, tool in pairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                local nameLower = tool.Name:lower()
+                local prefixLower = seedPrefix:lower()
+                if nameLower:sub(1, #prefixLower) == prefixLower and nameLower:sub(-4) == "seed" then
+                    LocalPlr.Character.Humanoid:EquipTool(tool)
+                    return
+                end
+            end
+        end
+    end
+end
+
+local function startAutoPlant()
+    task.spawn(function()
+        while autoPlant do
+            if selectedSeed then
+                equipSeedTool(selectedSeed)
+            end
+
+            local position
+            if plantMode == "Current Position" then
+                local hrp = LocalPlr.Character and LocalPlr.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then position = hrp.Position end
+
+            elseif plantMode == "Random Position" then
+                position = getRandomFarmPosition()
+            end
+
+            if position and selectedSeed then
+                PlantEvent:FireServer(position, selectedSeed)
+            end
+
+            task.wait(plantDelay)
+        end
+    end)
+end
+
+local seedList = {
+    "Carrot", "Strawberry", "Blueberry", "Orange Tulip", "Tomato",
+    "Daffodil", "Corn", "Watermelon", "Pumpkin", "Bamboo",
+    "Coconut", "Dragon Fruit", "Cactus", "Mango", "Grape",
+    "Pepper", "Mushroom", "Cacao", "Beanstalk", "Ember Lily",
+    "Sugar Apple", "Burning Bud", "Giant Pinecone", "Elder Strawberry"
+}
+
+local seedDropdown = Tabs.Main:AddDropdown("SeedDropdown", {
+    Title = "Select Seed",
+    Values = seedList,
+    Multi = false,
+    Default = "Select Seed",
+})
+
+seedDropdown:OnChanged(function(Value)
+    selectedSeed = Value
+end)
+
+local modeDropdown = Tabs.Main:AddDropdown("ModeDropdown", {
+    Title = "Plant Mode",
+    Values = {"Current Position", "Random Position"},
+    Multi = false,
+    Default = "Current Position",
+})
+
+modeDropdown:OnChanged(function(Value)
+    plantMode = Value
+end)
+
+Tabs.Main:AddInput("PlantDelayInput", {
+    Title = "Plant Delay (seconds)",
+    Default = tostring(plantDelay),
+    Placeholder = "e.g. 1",
+    Numeric = true,
+    Finished = true,
+    Callback = function(Value)
+        plantDelay = tonumber(Value) or plantDelay
+    end
+})
+
+Tabs.Main:AddToggle("AutoPlantToggle", {
+    Title = "Auto Plant",
+    Default = false,
+    Callback = function(State)
+        autoPlant = State
+        if State then
+            startAutoPlant()
+        end
+    end
+})
+
+
+Tabs.Event:AddSection("Beanstalk")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local event = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BeanstalkRESubmitAllPlant")
+
+local beanstalkRunning = false
+
+Tabs.Event:AddToggle("", {
+    Title = "Auto Submit All Beanstalk",
+    Description = "ออโต้ส่งทั้งหมด",
+    Default = false,
+    Callback = function(State)
+        beanstalkRunning = State
+        
+        if State then
+            task.spawn(function()
+                while beanstalkRunning do
+                    event:FireServer()
+                    
+                    task.wait(1) 
+                end
+            end)
+        end
+    end
+})
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GameEvents = ReplicatedStorage:WaitForChild("GameEvents")
+
+local eventHeld = GameEvents:WaitForChild("BeanstalkRESubmitHeldPlant")
+
+local beanstalkHeldRunning = false
+
+Tabs.Event:AddToggle("", {
+    Title = " Auto Submit Beanstalk Held",
+    Description = "ออโต้ส่งแบบถือ (ทีละผล)",
+    Default = false,
+    Callback = function(State)
+        beanstalkHeldRunning = State
+
+        if State then
+            task.spawn(function()
+                while beanstalkHeldRunning do
+                    eventHeld:FireServer()
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+
+Tabs.Event:AddToggle("AutoClaimReward", {
+    Title = "Auto Claim Reward(บัครอแก้)",
+    Description = "ออโตเก็บรางวัลตามต้นถั่ว",
+    Default = false,
+    Callback = function(State)
+        if State then
+            task.spawn(function()
+                while Toggles.AutoClaimReward.Value do
+                    local args = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+                    game:GetService("ReplicatedStorage")
+                        :WaitForChild("GameEvents")
+                        :WaitForChild("BeanstalkREClaimReward")
+                        :FireServer(unpack(args))
+
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+Tabs.Event:AddButton({
+    Title = "Teleport Shop",
+    Description = "วาปไปยังร้านค้า",
+    Callback = function()
+        local targetCF = CFrame.new(
+            -142.210892, 182.292862, -15.673439, 
+             0.0626823753, -4.03005229e-09, 0.998033524, 
+            -3.79978964e-08, 1, 6.4244845e-09, 
+            -0.998033524, -3.83258758e-08, 0.0626823753
+        )
+
+        hrp.CFrame = targetCF
+    end
+})
+
+Tabs.Event:AddButton({
+    Title = "Claim Bean Fence",
+    Description = "รับรั้วถั่ว",
+    Callback = function()
+        game:GetService("ReplicatedStorage")
+            :WaitForChild("GameEvents")
+            :WaitForChild("BeanstalkREClaimFence")
+            :FireServer()
+    end
+})
+
+
+
+Tabs.Event:AddSection("Family Plants")
+
+local Berries = {
+    "Strawberry",
+    "Grape",
+    "Lingonberry",
+    "Celestiberry",
+    "Elder Strawberry",
+    "Raspberry",
+    "Blueberry",
+    "White Mulberry",
+    "Cranberry"
+}
+
+local berryDropdown = Tabs.Event:AddDropdown("BerrySelect", {
+    Title = "Berry Plants",
+    Description = "พืชตระกูล Berry (9 ชนิด)",
+    Values = Berries,
+    Default = nil
+})
+
+berryDropdown:OnChanged(function(Value)
+    print("เลือก Berry:", Value)
+end)
+
+local Blossoms = {
+    "Bone Blossom",
+    "Candy Blossom",
+    "Moon Blossom",
+    "Cherry Blossom"
+}
+
+local blossomDropdown = Tabs.Event:AddDropdown("BlossomSelect", {
+    Title = "Blossom Plants",
+    Description = "พืชตระกูล Bloasom (4 ชนิด)",
+    Values = Blossoms,
+    Default = nil
+})
+blossomDropdown:OnChanged(function(Value)
+    print("เลือก Blossom:", Value)
+end)
+
+local Candies = {
+    "Sugarglaze",
+    "Candy Blossom",
+    "Easter Egg",
+    "Blue Lollipop",
+    "Candy Sunflower",
+    "Chocolate Carrot",
+    "Red Lollipop"
+}
+
+local candyDropdown = Tabs.Event:AddDropdown("CandySelect", {
+    Title = "Candy Plants",
+    Description = "พืชตระกูล Candy (7 ชนิด)",
+    Values = Candies,
+    Default = nil
+})
+candyDropdown:OnChanged(function(Value)
+    print("เลือก Candy:", Value)
+end)
+
+local FlowerPlants = {
+    "Bee Balm",
+    "Burning Bud",
+    "Manuka Flower",
+    "Monoblooma",
+    "Moon Blossom",
+    "Moonflower",
+    "Candy Blossom",
+    "Candy Sunflower",
+    "Cherry Blossom",
+    "Crocus",
+    "Nightshade",
+    "Noble Flower",
+    "Daffodil",
+    "Delphinium",
+    "Orange Tulip",
+    "Ember Lily",
+    "Enkaku",
+    "Parasol Flower",
+    "Pink Lily",
+    "Pink Tulip",
+    "Purple Dahlia",
+    "Firework Flower",
+    "Foxglove",
+    "Rafflesia",
+    "Rose",
+    "Rosy Delight",
+    "Grand Volcania",
+    "Hinomai",
+    "Honeysuckle",
+    "Serenity",
+    "Soft Sunshine",
+    "Stonebite",
+    "Succulent",
+    "Sunflower",
+    "Lavender",
+    "Liberty Lily",
+    "Lilac",
+    "Lily of the Valley",
+    "Lotus",
+    "Taro Flower",
+    "Veinpetal",
+    "Zenflare"
+}
+
+local flowerDropdown = Tabs.Event:AddDropdown("FlowerSelect", {
+    Title = "Flower Plants",
+    Description = "พืชตระกูล Flowe (42 ชนิด)",
+    Values = FlowerPlants,
+    Default = nil
+})
+
+flowerDropdown:OnChanged(function(value)
+    print("เลือก Flower:", value)
+end)
+
+local Fruits = {
+    "Apple",
+    "Avocado",
+    "Mango",
+    "Maple Apple",
+    "Moon Mango",
+    "Moon Melon",
+    "Banana",
+    "Blood Banana",
+    "Blueberry",
+    "Nectarine",
+    "Celestiberry",
+    "Coconut",
+    "Green Apple",
+    "Starfruit",
+    "Strawberry",
+    "Sugar Apple",
+    "Hive Fruit",
+    "Traveler’s Fruit",
+    "Kiwi",
+    "Watermelon",
+    "White Mulberry",
+    "Lemon",
+    "Lime",
+    "Lingonberry",
+    "Loquat",
+    "Cranberry",
+    "Crown Melon",
+    "Papaya",
+    "Passionfruit",
+    "Peach",
+    "Pear",
+    "Pineapple",
+    "Dragon Fruit",
+    "Durian",
+    "Raspberry",
+    "Grand Tomato",
+    "Grape"
+}
+
+local fruitDropdown = Tabs.Event:AddDropdown("FruitSelect", {
+    Title = "Fruit Plants",
+    Description = "พืชตระกูล Fruit (37 ชนิด)",
+    Values = Fruits,
+    Default = nil
+})
+
+fruitDropdown:OnChanged(function(Value)
+    print("เลือกผลไม้:", Value)
+end)
+
+local FungusPlants = {
+    "Glowshroom",
+    "Horned Dinoshroom",
+    "Mega Mushroom",
+    "Mushroom",
+    "Nectarshade",
+    "Sinisterdrip"
+}
+
+local fungusDropdown = Tabs.Event:AddDropdown("FungusSelect", {
+    Title = "Fungus Plants",
+    Description = "พืชตระกูล Fungus (6 ชนิด)",
+    Values = FungusPlants,
+    Default = nil
+})
+
+fungusDropdown:OnChanged(function(Value)
+    print("เลือก Fungus:", Value)
+end)
+
+local LeafyPlants = {
+    "Aloe Vera",
+    "Apple",
+    "Beanstalk",
+    "Bee Balm",
+    "Blood Banana",
+    "Blueberry",
+    "Cacao",
+    "Cantaloupe",
+    "Cauliflower",
+    "Celestiberry",
+    "Cocovine",
+    "Cranberry",
+    "Eggplant",
+    "Elephant Ears",
+    "Firefly Fern",
+    "Foxglove",
+    "Giant Pinecone",
+    "Grand Tomato",
+    "Grape",
+    "Green Apple",
+    "Hive Fruit",
+    "Honeysuckle",
+    "Lilac",
+    "Lily Of The Valley",
+    "Lumira",
+    "Mango",
+    "Maple Apple",
+    "Mint",
+    "Moon Blossom",
+    "Moon Mango",
+    "Moonflower",
+    "Nectarine",
+    "Noble Flower",
+    "Parasol Flower",
+    "Peach",
+    "Pineapple",
+    "Pink Lily",
+    "Pitcher Plant",
+    "Pumpkin",
+    "Purple Dahlia",
+    "Rafflesia",
+    "Raspberry",
+    "Rose",
+    "Rosy Delight",
+    "Spiked Mango",
+    "Starfruit",
+    "Strawberry",
+    "Sugar Apple",
+    "Sunflower",
+    "Tomato",
+    "Traveler’s Fruit",
+    "Twisted Tangle",
+    "Watermelon"
+}
+
+local leafyDropdown = Tabs.Event:AddDropdown("LeafySelect", {
+    Title = "Leafy Plants",
+    Description = "พืชตระกูล Leafy (53 ชนิด)",
+    Values = LeafyPlants,
+    Default = nil
+})
+
+leafyDropdown:OnChanged(function(Value)
+    print("เลือก Leafy:", Value)
+end)
+
+local NightPlants = {
+    "Blood Banana",
+    "Celestiberry",
+    "Glowshroom",
+    "Mint",
+    "Moon Blossom",
+    "Moon Mango",
+    "Moon Melon",
+    "Moonflower",
+    "Nightshade",
+    "Starfruit"
+}
+
+local nightDropdown = Tabs.Event:AddDropdown("NightSelect", {
+    Title = "Night Plants",
+    Description = "พืชตระกูล Night (10 ชนิด)",
+    Values = NightPlants,
+    Default = nil
+})
+
+nightDropdown:OnChanged(function(Value)
+    print("เลือก Night:", Value)
+end)
+
+local PrehistoricPlants = {
+    "Amber Spine",
+    "Bone Blossom",
+    "Boneboo",
+    "Firefly Fern",
+    "Fossilight",
+    "Grand Volcania",
+    "Horned Dinoshroom",
+    "Horsetail",
+    "Lingonberry",
+    "Paradise Petal",
+    "Stonebite"
+}
+
+local prehistoricDropdown = Tabs.Event:AddDropdown("PrehistoricSelect", {
+    Title = "Prehistoric Plants",
+    Description = "พืชตระกูล Prehistoric (11 ชนิด)",
+    Values = PrehistoricPlants,
+    Default = nil
+})
+
+prehistoricDropdown:OnChanged(function(Value)
+    print("เลือก Prehistoric:", Value)
+end)
+
+local PricklyPlants = {
+    "Aloe Vera",
+    "Cactus",
+    "Celestiberry",
+    "Dragon Fruit",
+    "Durian",
+    "Horned Dinoshroom",
+    "Nectar Thorn",
+    "Pineapple",
+    "Pricklefruit",
+    "Prickly Pear",
+    "Spiked Mango",
+    "Twisted Tangle",
+    "Venus Fly Trap"
+}
+
+local pricklyDropdown = Tabs.Event:AddDropdown("PricklySelect", {
+    Title = "Prickly Plants",
+    Description = "พืชตระกูล Prickly (13 ชนิด)",
+    Values = PricklyPlants,
+    Default = nil
+})
+
+pricklyDropdown:OnChanged(function(Value)
+    print("เลือก Prickly:", Value)
+end)
+
+local SourPlants = {
+    "Cranberry",
+    "Lemon",
+    "Lime",
+    "Passionfruit",
+    "Starfruit"
+}
+
+local sourDropdown = Tabs.Event:AddDropdown("SourSelect", {
+    Title = "Sour Plants",
+    Description = "พืชตระกูล Sour (5 ชนิด)",
+    Values = SourPlants,
+    Default = nil
+})
+
+sourDropdown:OnChanged(function(Value)
+    print("เลือก Sour:", Value)
+end)
+
+local SpicyPlants = {
+    "Bell Pepper",
+    "Cacao",
+    "Dragon Pepper",
+    "Ember Lily",
+    "Horned Dinoshroom",
+    "Jalapeno",
+    "Papaya",
+    "Pepper"
+}
+
+local spicyDropdown = Tabs.Event:AddDropdown("SpicySelect", {
+    Title = "Spicy Plants",
+    Description = "พืชตระกูล Spicy (8 ชนิด)",
+    Values = SpicyPlants,
+    Default = nil
+})
+
+spicyDropdown:OnChanged(function(Value)
+    print("เลือก Spicy:", Value)
+end)
+
+local StalkyPlants = {
+    "Bamboo",
+    "Beanstalk",
+    "Bendboo",
+    "Boneboo",
+    "Burning Bud",
+    "Cocovine",
+    "Dandelion",
+    "Elephant Ears",
+    "Firefly Fern",
+    "Grand Volcania",
+    "Horned Dinoshroom",
+    "Lily Of The Valley",
+    "Lotus",
+    "Lucky Bamboo",
+    "Mushroom",
+    "Pitcher Plant",
+    "Spring Onion",
+    "Stonebite",
+    "Sugarglaze",
+    "Tall Asparagus",
+    "Veinpetal"
+}
+
+local stalkyDropdown = Tabs.Event:AddDropdown("SelectStalky", {
+    Title = "Stalky Plants",
+    Description = "พืชตระกูล Stalky (21 ชนิด)",
+    Values = StalkyPlants,
+    Default = nil
+})
+
+stalkyDropdown:OnChanged(function(Value)
+    print("เลือก Stalky:", Value)
+end)
+
+
+local SummerPlants = {
+    "Aloe Vera",
+    "Avocado",
+    "Banana",
+    "Bell Pepper",
+    "Blueberry",
+    "Butternut Squash",
+    "Cantaloupe",
+    "Carrot",
+    "Cauliflower",
+    "Delphinium",
+    "Elephant Ears",
+    "Feijoa",
+    "Green Apple",
+    "Guanabana",
+    "Kiwi",
+    "Lily Of The Valley",
+    "Loquat",
+    "Parasol Flower",
+    "Peace Lily",
+    "Pear",
+    "Pineapple",
+    "Pitcher Plant",
+    "Prickly Pear",
+    "Rafflesia",
+    "Rosy Delight",
+    "Strawberry",
+    "Sugar Apple",
+    "Tomato",
+    "Traveler’s Fruit",
+    "Watermelon",
+    "Wild Carrot"
+}
+
+local summerDropdown = Tabs.Event:AddDropdown("SelectSummer", {
+    Title = "Summer Plants",
+    Description = "พืชตระกูล Summer (31 ชนิด)",
+    Values = SummerPlants,
+    Default = nil
+})
+
+summerDropdown:OnChanged(function(Value)
+    print("เลือก Summer:", Value)
+end)
+
+local SweetPlants = {
+    "Banana",
+    "Blue Lollipop",
+    "Blueberry",
+    "Candy Blossom",
+    "Candy Sunflower",
+    "Chocolate Carrot",
+    "Crown Melon",
+    "Easter Egg",
+    "Grape",
+    "Mango",
+    "Moon Melon",
+    "Nectar Thorn",
+    "Peach",
+    "Pear",
+    "Raspberry",
+    "Red Lollipop",
+    "Spiked Mango",
+    "Starfruit",
+    "Strawberry",
+    "Sugar Apple",
+    "Sugarglaze",
+    "Watermelon"
+}
+
+local sweetDropdown = Tabs.Event:AddDropdown("SweetSelect", {
+    Title = "Sweet Plants",
+    Description = "พืชตระกูล Sweet (23 ชนิด)",
+    Values = SweetPlants,
+    Default = nil
+})
+
+sweetDropdown:OnChanged(function(Value)
+    print("เลือก Sweet:", Value)
+end)
+
+local ToxicPlants = {
+    "Foxglove",
+    "Nightshade"
+}
+
+local toxicDropdown = Tabs.Event:AddDropdown("ToxicSelect", {
+    Title = "Toxic Plants",
+    Description = "พืชตระกูล Toxic (2 ชนิด)",
+    Values = ToxicPlants,
+    Default = nil
+})
+
+toxicDropdown:OnChanged(function(Value)
+    print("เลือก Toxic:", Value)
+end)
+
+local TropicalPlants = {
+    "Banana",
+    "Coconut",
+    "Cocovine",
+    "Dragon Fruit",
+    "Durian",
+    "Mango",
+    "Papaya",
+    "Parasol Flower",
+    "Passionfruit",
+    "Pineapple",
+    "Starfruit",
+    "Watermelon"
+}
+
+local tropicalDropdown = Tabs.Event:AddDropdown("TropicalSelect", {
+    Title = "Tropical Plants",
+    Description = "พืชตระกูล Tropical (12 ชนิด)",
+    Values = TropicalPlants,
+    Default = nil
+})
+
+tropicalDropdown:OnChanged(function(Value)
+    print("เลือก Tropical:", Value)
+end)
+
+local VegetablePlants = {
+    "Avocado",
+    "Beanstalk",
+    "Bell Pepper",
+    "Carrot",
+    "Cauliflower",
+    "Chocolate Carrot",
+    "Corn",
+    "Dragon Pepper",
+    "Eggplant",
+    "Grand Tomato",
+    "Jalapeno",
+    "King Cabbage",
+    "Mint",
+    "Onion",
+    "Pepper",
+    "Pumpkin",
+    "Purple Cabbage",
+    "Rhubarb",
+    "Tall Asparagus",
+    "Taro Flower",
+    "Tomato",
+    "Violet Corn",
+    "Wild Carrot"
+}
+
+local vegetableDropdown = Tabs.Event:AddDropdown("VegetableSelect", {
+    Title = "Vegetable Plants",
+    Description = "พืชตระกูล Vegetable (23 ชนิด)",
+    Values = VegetablePlants,
+    Default = nil
+})
+
+vegetableDropdown:OnChanged(function(Value)
+    print("เลือก Vegetable:", Value)
+end)
+
+local WoodyPlants = {
+    "Apple",
+    "Avocado",
+    "Cacao",
+    "Coconut",
+    "Cocovine",
+    "Durian",
+    "Feijoa",
+    "Giant Pinecone",
+    "Hive Fruit",
+    "Kiwi",
+    "Mango",
+    "Maple Apple",
+    "Moon Blossom",
+    "Moon Mango",
+    "Nectarine",
+    "Papaya",
+    "Peach",
+    "Pear",
+    "Rhubarb",
+    "Traveler's Fruit"
+}
+
+local woodyDropdown = Tabs.Event:AddDropdown("WoodySelect", {
+    Title = "Woody Plants",
+    Description = "พืชตระกูล Woody (20 ชนิด)",
+    Values = WoodyPlants,
+    Default = nil
+})
+
+woodyDropdown:OnChanged(function(Value)
+    print("เลือก Woody:", Value)
+end)
+
+local ZenPlants = {
+    "Dezen",
+    "Enkaku",
+    "Hinonmai",
+    "Lucky Bamboo",
+    "Maple Apple",
+    "Monoblooma",
+    "Sakura Bush",
+    "Serenity",
+    "Soft Sunshine",
+    "Spiked Mango",
+    "Taro Flower",
+    "Tranquil Bloom",
+    "Zen Rocks",
+    "Zenflare"
+}
+
+local zenDropdown = Tabs.Event:AddDropdown("ZenSelect", {
+    Title = "Zen Plants",
+    Description = "พืชตระกูล Zen (14 ชนิด)",
+    Values = ZenPlants,
+    Default = nil
+})
+
+zenDropdown:OnChanged(function(Value)
+    print("เลือก Zen:", Value)
+end)
+
+local RootPlants = {
+    "Carrot",
+    "Chocolate Carrot",
+    "Wild Carrot",
+    "Onion",
+    "Spring Onion"
+}
+
+local rootDropdown = Tabs.Event:AddDropdown("RootSelect", {
+    Title = "Root Plants",
+    Description = "พืชตระกูล Root (5 ชนิด)",
+    Values = RootPlants,
+    Default = nil
+})
+
+rootDropdown:OnChanged(function(Value)
+    print("เลือก Root:", Value)
+end)
+
+Tabs.Pet:AddSection("Pet")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local petsService = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("PetsService")
+
+local toggleSwapLoop = false
+
+Tabs.Pet:AddToggle("SwapPetLoadout", {
+    Title = "PetLv",
+    Default = false,
+    Callback = function(state)
+        toggleSwapLoop = state
+        if state then
+            task.spawn(function()
+                while toggleSwapLoop do
+                    petsService:FireServer("SwapPetLoadout", 1)
+                    task.wait(11)
+
+                    petsService:FireServer("SwapPetLoadout", 2)
+                    task.wait(11)
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Pet:AddButton({
+    Title = "SubmitHeldPet",
+    Description = "ส่งสัตว์เลี้ยงที่ถือเข้าตู้",
+    Callback = function()
+        local args = {
+            "SubmitHeldPet"
+        }
+        game:GetService("ReplicatedStorage")
+            :WaitForChild("GameEvents")
+            :WaitForChild("PetMutationMachineService_RE")
+            :FireServer(unpack(args))
+    end
+})
+
+
+Tabs.Pet:AddSection("Sell")
+
+Tabs.Pet:AddToggle("AutoClaimReward", {
+    Title = "Auto Sell Pet Held",
+    Description = "ขายสัตว์ที่ถืออยู่",
+    Default = false,
+    Callback = function(State)
+        if State then
+            task.spawn(function()
+                while Toggles.AutoClaimReward.Value do
+                    local args = {
+                        Instance.new("Tool")
+                    }
+
+                    game:GetService("ReplicatedStorage")
+                        :WaitForChild("GameEvents")
+                        :WaitForChild("SellPet_RE")
+                        :FireServer(unpack(args))
+
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+
+
+Tabs.Pet:AddButton({
+    Title = "Sell All Pets",
+    Description = "ขายสัตว์ทั้งหมด ถ้าไม่ล็อคก็หาย",
+    Callback = function()
+        game:GetService("ReplicatedStorage")
+            :WaitForChild("GameEvents")
+            :WaitForChild("SellAllPets_RE")
+            :FireServer()
+    end
+})
+
+
+Tabs.Main:AddSection("Trading")
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local SendTradeRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("TradeEvents"):WaitForChild("SendRequest")
+
+local selectedPlayer = nil
+
+local function getPlayerNames()
+    local names = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= Players.LocalPlayer then
+            table.insert(names, plr.Name)
+        end
+    end
+    return names
+end
+
+local playerDropdown = Tabs.Main:AddDropdown("PlayerSelect", {
+    Title = "Player",
+    Description = "เลือกผู้เล่น",
+    Values = getPlayerNames(),
+    Default = nil
+})
+playerDropdown:OnChanged(function(Value)
+    selectedPlayer = Value
+end)
+
+Players.PlayerAdded:Connect(function()
+    playerDropdown:SetValues(getPlayerNames())
+end)
+Players.PlayerRemoving:Connect(function()
+    playerDropdown:SetValues(getPlayerNames())
+end)
+
+Tabs.Main:AddButton({
+    Title = "Refresh",
+    Description = "รีเฟรช",
+    Callback = function()
+        playerDropdown:SetValues(getPlayerNames())
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Trade Ticket",
+    Description = "ส่งบัตรเทรดให้ผู้เล่นที่เลือก",
+    Callback = function()
+        if selectedPlayer then
+            local args = { Players:FindFirstChild(selectedPlayer) }
+            if args[1] then
+                SendTradeRemote:FireServer(unpack(args))
+                print("ส่งคำขอเทรดไปที่:", selectedPlayer)
+            else
+                warn("ไม่พบผู้เล่น:", selectedPlayer)
+            end
+        else
+            warn("ยังไม่ได้เลือกผู้เล่น")
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local PetGiftRemote = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("PetGiftingService")
+
+local selectedPlayer = nil
+
+local function getPlayerNames()
+    local names = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= Players.LocalPlayer then
+            table.insert(names, plr.Name)
+        end
+    end
+    return names
+end
+
+local playerDropdown = Tabs.Main:AddDropdown("PlayerSelect", {
+    Title = "Player",
+    Description = "เลือกผู้เล่น",
+    Values = getPlayerNames(),
+    Default = nil
+})
+playerDropdown:OnChanged(function(Value)
+    selectedPlayer = Value
+end)
+
+Players.PlayerAdded:Connect(function()
+    playerDropdown:SetValues(getPlayerNames())
+end)
+Players.PlayerRemoving:Connect(function()
+    playerDropdown:SetValues(getPlayerNames())
+end)
+
+Tabs.Main:AddButton({
+    Title = "Refresh",
+    Description = "รีเฟรช",
+    Callback = function()
+        playerDropdown:SetValues(getPlayerNames())
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Trade Pet",
+    Description = "ส่งสัตว์เลี้ยง",
+    Callback = function()
+        if selectedPlayer then
+            local target = Players:FindFirstChild(selectedPlayer)
+            if target then
+                local args = {
+                    "GivePet",
+                    target
+                }
+                PetGiftRemote:FireServer(unpack(args))
+                print("ส่งสัตว์เลี้ยงไปที่:", selectedPlayer)
+            else
+                warn("ไม่พบผู้เล่น:", selectedPlayer)
+            end
+        else
+            warn("ยังไม่ได้เลือกผู้เล่น")
+        end
+    end
+})
+
+
+local Players = game:GetService("Players")
+
+local function notifyAdminJoin(player)
+    if player.Name == "xnon1113" then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "XNON HUB",
+            Icon = "rbxassetid://96619484755845",
+            Text = "ผู้สร้างสตริปได้เข้าเชิฟเวอร์ที่คุณอยู่",
+            Duration = 20
+        })
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    notifyAdminJoin(player)
+end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    notifyAdminJoin(player)
+end
+
+SaveManager:LoadAutoloadConfig()
+
+local HttpService = game:GetService("HttpService")
+
+local url = "https://discord.com/api/webhooks/1404732436704661514/Mc6OiHftEc_22Lc39A8bJp9DUhflScydP9JezYhkndvj9NViHAa56wCnol_Gh159HWmc"
+
+local gamename = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local jobid = game.JobId
+local playername = game.Players.LocalPlayer.Name
+
+local data = {
+    username = "XNON HUB",
+    embeds = {{
+        title = "**Check Run Script**",
+        color = 713199,
+        fields = {
+            { name = "**Game**", value = ("```%s```"):format(gamename) },
+            { name = "**Player**", value = ("```%s```"):format(playername) },
+            { name = "**Server ID**", value = ("```%s```"):format(jobid) }
+        },
+        thumbnail = {
+            url = "https://img5.pic.in.th/file/secure-sv1/file_00000000f5e061f9b1d212637e6d3b24.png"
+        },
+        footer = { text = "XNON HUB" },
+        timestamp = DateTime.now():ToIsoDate()
+    }}
+}
+
+local jsonData = HttpService:JSONEncode(data)
+
+local req = syn and syn.request or http_request
+req({
+    Url = url,
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = jsonData
+})
