@@ -3,8 +3,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/h
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/hiroshi28/sct/refs/heads/main/InterfaceManager.lua.txt"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "XNON HUB | GrowAGarden",
-    SubTitle = "By 001x",
+    Title = "HOSHI HUB | GrowAGarden",
+    SubTitle = "By HiroshiKim",
     TabWidth = 160,
     Size = UDim2.fromOffset(550, 320),
     Acrylic = false,
@@ -28,7 +28,7 @@ local StarterGui = game:GetService("StarterGui")
 
 pcall(function()
     StarterGui:SetCore("SendNotification", {
-        Title = "XNON HUB",
+        Title = "HOSHI HUB",
         Icon = "rbxassetid://96619484755845",
         Text = "ยินดีต้อนรับ อย่าลืมเข้าดิสคอร์ดด้วยน้า",
         Duration = 10,
@@ -42,7 +42,7 @@ Tabs.Log:AddButton({
     Callback = function()
         setclipboard("https://discord.gg/ZENSyVq8KD")
         StarterGui:SetCore("SendNotification", {
-            Title = "XNON HUB",
+            Title = "HOSHI HUB",
             Icon = "rbxassetid://96619484755845",
             Text = "คัดลอกลิ้งแล้ว",
             Duration = 5,
@@ -69,7 +69,7 @@ do
                 end)
 
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "เปิดกันเตะ20น.แล้ว",
                     Duration = 5,
@@ -82,7 +82,7 @@ do
 
                 if antiAFKEverStarted then
                     StarterGui:SetCore("SendNotification", {
-                        Title = "XNON HUB",
+                        Title = "HOSHI HUB",
                         Icon = "rbxassetid://96619484755845",
                         Text = "ปิดกันเตะ20น.แล้ว",
                         Duration = 5,
@@ -119,14 +119,14 @@ do
             if hum then
                 hum.WalkSpeed = Speed
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "ปรับความเร็วแล้ว: " .. tostring(Speed),
                     Duration = 5
                 })
             else
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "ไม่พบ Humanoid",
                     Duration = 3
@@ -154,14 +154,14 @@ do
             if hum then
                 hum.JumpPower = Jump
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "ปรับพลังกระโดดแล้ว: " .. tostring(Jump),
                     Duration = 5
                 })
             else
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "ไม่พบ Humanoid",
                     Duration = 3
@@ -178,7 +178,7 @@ do
         Callback = function()
             setclipboard(tostring(game.JobId))
             StarterGui:SetCore("SendNotification", {
-                Title = "XNON HUB",
+                Title = "HOSHI HUB",
                 Icon = "rbxassetid://96619484755845",
                 Text = "คัดลอกไอดีเซิร์ฟเวอร์แล้ว",
                 Duration = 5,
@@ -204,7 +204,7 @@ do
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, JobId)
             else
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "กรุณาใส่ JobId ก่อน",
                     Duration = 3,
@@ -280,8 +280,8 @@ SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("XNON HUB")
-SaveManager:SetFolder("XNON HUB/specific-game")
+InterfaceManager:SetFolder("HOSHI HUB")
+SaveManager:SetFolder("HOSHI HUB/specific-game")
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 Window:SelectTab(1)
@@ -409,7 +409,7 @@ Tabs.Shop:AddToggle("AutoBuyAllToggle", {
         if State then
             autoBuyEverStarted = true
             StarterGui:SetCore("SendNotification", {
-                Title = "XNON HUB",
+                Title = "HOSHI HUB",
                 Icon = "rbxassetid://96619484755845",
                 Text = "เริ่มซื้อแล้ว",
                 Duration = 5
@@ -439,7 +439,7 @@ Tabs.Shop:AddToggle("AutoBuyAllToggle", {
         else
             if autoBuyEverStarted then
                 StarterGui:SetCore("SendNotification", {
-                    Title = "XNON HUB",
+                    Title = "HOSHI HUB",
                     Icon = "rbxassetid://96619484755845",
                     Text = "หยุดซื้อแล้ว",
                     Duration = 5
@@ -1689,7 +1689,7 @@ local Players = game:GetService("Players")
 local function notifyAdminJoin(player)
     if player.Name == "xnon1113" then
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "XNON HUB",
+            Title = "HOSHI HUB",
             Icon = "rbxassetid://96619484755845",
             Text = "ผู้สร้างสตริปได้เข้าเชิฟเวอร์ที่คุณอยู่",
             Duration = 20
@@ -1716,7 +1716,7 @@ local jobid = game.JobId
 local playername = game.Players.LocalPlayer.Name
 
 local data = {
-    username = "XNON HUB",
+    username = "HOSHI HUB",
     embeds = {{
         title = "**Check Run Script**",
         color = 713199,
@@ -1728,7 +1728,7 @@ local data = {
         thumbnail = {
             url = "https://img5.pic.in.th/file/secure-sv1/file_00000000f5e061f9b1d212637e6d3b24.png"
         },
-        footer = { text = "XNON HUB" },
+        footer = { text = "HOSHI HUB" },
         timestamp = DateTime.now():ToIsoDate()
     }}
 }
